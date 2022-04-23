@@ -10,6 +10,7 @@ using CodeDuo.DI.Sql;
 using CodeDuo.DI.Access;
 using CodeDuo.DI.Providers;
 using CodeDuo.DI.Memory.ConnectionCache;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("CodeDuoDbContextConnection");
@@ -35,6 +36,11 @@ builder.Services.AddSingleton<IAccessDB, AccessDB>();
 
 
 var app = builder.Build();
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 if (!app.Environment.IsDevelopment())
 {
