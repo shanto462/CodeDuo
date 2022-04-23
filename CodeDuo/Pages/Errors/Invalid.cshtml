@@ -1,0 +1,17 @@
+﻿@page "{ErrorType}"
+@model CodeDuo.Pages.Errors.InvalidModel
+@{
+}
+
+@if (Model.ErrorType == "InvalidLink")
+{
+    <h1>Invalid Link</h1>
+}
+else if(Model.ErrorType == "NoPermission")
+{
+    <h1>You don't have any permission for this code.</h1>
+}
+else
+{
+    <p>Error! <a class="nav-link text-dark" asp-area="" asp-page="/Index">Click Here to go back to home.</a></p>
+}

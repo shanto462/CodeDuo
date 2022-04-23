@@ -1,0 +1,22 @@
+﻿@page "{CodeId?}"
+@model CodeDuo.Pages.PlaygroundModel
+@{
+}
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <textarea id="codeSegment" style="width:500px;height:500px">@Model.TempCodeData?.TempCode</textarea>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <button id="btnSend" class="btn btn-primary">Send</button>
+    </div>
+</div>
+<br />
+
+<input hidden id="userId" value="@UserManager.GetUserName(User)" />
+<input hidden id="codeId" value="@Model.CodeId" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.4/signalr.min.js"></script>
+<script src="~/js/playground.js"></script>
