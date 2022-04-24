@@ -1,6 +1,7 @@
 ﻿using CodeDuo.Data;
 using CodeDuo.DI.Access;
 using CodeDuo.DI.Memory.ConnectionCache;
+using CodeDuo.Extensions;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 
@@ -17,9 +18,9 @@ namespace CodeDuo.Hubs
             _connectionCache = connectionCache;
         }
 
-        public async Task UpdateCode(string userId, string guid, string message)
+        public async Task UpdateCode(string userId, string guid, string message, int cursor)
         {
-            _accessDB.UpdateCodedata(Guid.Parse(guid), message, 0, 0);
+            _accessDB.UpdateCodedata(Guid.Parse(guid), message, 0);
             foreach (var connectionKey in _connectionCache.GetConnectionKeys(guid))
             {
                 await Clients.Clients(connectionKey).SendAsync("ReceiveBroadCast", guid, message);

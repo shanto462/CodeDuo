@@ -12,7 +12,7 @@ namespace CodeDuo.DI.Memory
             return _memoryDB.ContainsKey(guid) ? _memoryDB[guid] : null;
         }
 
-        public void UpdateCodedata(Guid guid, string modified, int row, int column)
+        public void UpdateCodedata(Guid guid, string modified, int cursor)
         {
             if (_memoryDB.ContainsKey(guid))
             {

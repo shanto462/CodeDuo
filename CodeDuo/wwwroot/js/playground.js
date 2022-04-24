@@ -23,19 +23,19 @@ connection.start().then(function () {
 
 document.getElementById("btnSend").disabled = true;
 
-connection.on("ReceiveBroadCast", function (user, message) {
+connection.on("ReceiveBroadCast", async function (user, message) {
     if (user != document.getElementById("userId").value)
-        document.getElementById("codeSegment").value = message;
+        document.getElementById("codeSegment").value = (message);
 });
 
-document.getElementById("btnSend").addEventListener("click", function (event) {
-    if (!isConnected)
-        return;
+var textArea = document.getElementById("codeSegment");
+
+textArea.addEventListener("input", async function () {
+    var value = textArea.value;
+    value = (value)
     var user = document.getElementById("userId").value;
     var codeId = document.getElementById("codeId").value;
-    var message = document.getElementById("codeSegment").value;
-    connection.invoke("UpdateCode", user, codeId, message).catch(function (err) {
+    connection.invoke("UpdateCode", user, codeId, value, 0).catch(function (err) {
         return console.error(err.toString());
     });
-    event.preventDefault();
 });

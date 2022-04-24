@@ -26,9 +26,9 @@ namespace CodeDuo.DI.Access
             return true;
         }
 
-        public void UpdateCodedata(Guid guid, string modified, int row, int column)
+        public void UpdateCodedata(Guid guid, string modified, int cursor)
         {
-            _memoryDB.UpdateCodedata(guid, modified, row, column);
+            _memoryDB.UpdateCodedata(guid, modified, cursor);
         }
 
         public bool IsInvalidGuid(string CodeId)

@@ -1,4 +1,6 @@
-﻿namespace CodeDuo.DI.Memory
+﻿using System.Collections.Concurrent;
+
+namespace CodeDuo.DI.Memory
 {
     public class InMemoryCodeData
     {
