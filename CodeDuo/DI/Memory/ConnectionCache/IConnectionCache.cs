@@ -4,5 +4,6 @@
     {
         IEnumerable<string> GetConnectionKeys(string guid);
         bool RegisterConnection(string guid, string userId, string connectionKey);
+        bool RemoveFromCache(string connectionKey);
     }
 }

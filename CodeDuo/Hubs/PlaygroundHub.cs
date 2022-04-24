@@ -41,5 +41,11 @@ namespace CodeDuo.Hubs
         {
             return base.OnConnectedAsync();
         }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            _connectionCache.RemoveFromCache(Context.ConnectionId);
+            return base.OnDisconnectedAsync(exception);
+        }
     }
 }

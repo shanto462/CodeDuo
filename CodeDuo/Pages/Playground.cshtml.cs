@@ -1,3 +1,4 @@
+using CodeDuo.Areas.Identity.Data;
 using CodeDuo.DI.Access;
 using CodeDuo.DI.Memory;
 using CodeDuo.DI.Providers;
@@ -15,11 +16,13 @@ namespace CodeDuo.Pages
 
         private readonly IAccessDB _accessDB;
         private readonly ICodeIdProvider _codeIdProvider;
+        private readonly UserManager<CodeDuoUser> _userManager;
 
-        public PlaygroundModel(IAccessDB accessDB, ICodeIdProvider codeIdProvider)
+        public PlaygroundModel(IAccessDB accessDB, ICodeIdProvider codeIdProvider, UserManager<CodeDuoUser> userManager)
         {
             _accessDB = accessDB;
             _codeIdProvider = codeIdProvider;
+            _userManager = userManager;
         }
 
         public IActionResult OnGet()
@@ -30,13 +33,16 @@ namespace CodeDuo.Pages
             {
                 var guid = _codeIdProvider.GetCodeId();
                 CodeId = guid.ToString();
-                TempCodeData = _accessDB.CreateCodedata(guid);
+                TempCodeData = _accessDB.CreateCodedata(guid, _userManager.GetUserName(User));
                 return RedirectToPage($"/Playground", new { CodeId = CodeId });
             }
             else
             {
                 if (_accessDB.IsInvalidGuid(CodeId))
                     return RedirectToPage($"/Errors/Invalid", new { ErrorType = "InvalidLink" });
+                if(!_accessDB.AddSharingToUserId(Guid.Parse(CodeId), _userManager.GetUserName(User)))
+                    return RedirectToPage($"/Errors/Invalid", new { ErrorType = "InvalidLink" });
+
                 TempCodeData = _accessDB.GetCodedata(Guid.Parse(CodeId));
             }
             return Page();

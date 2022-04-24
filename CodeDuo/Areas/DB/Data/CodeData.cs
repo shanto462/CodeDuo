@@ -5,10 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CodeDuo.Areas.DB.Data
 {
-    /*
-     *    line -> col => 
-     *    IMemoryDb singleton
-     */
     public class CodeData
     {
         [Key]

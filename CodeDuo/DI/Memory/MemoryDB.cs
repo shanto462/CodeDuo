@@ -20,15 +20,30 @@ namespace CodeDuo.DI.Memory
             }
         }
 
-        public InMemoryCodeData CreateCodedata(Guid guid)
+        public InMemoryCodeData CreateCodedata(Guid guid, string userId)
         {
             InMemoryCodeData value = new()
             {
                 TempCode = "",
                 LastUpdatedInMemoryDB = DateTime.UtcNow,
+                OwnerId = userId
             };
             _memoryDB.TryAdd(guid, value);
             return value;
+        }
+
+        public bool AddSharingToUserId(Guid guid, string userId)
+        {
+            if(_memoryDB.ContainsKey(guid))
+            {
+                var data = _memoryDB[guid];
+                if(data.OwnerId == userId)
+                    return true;
+                if(data.SharedUsers.ContainsKey(userId))
+                    return true;
+                return data.SharedUsers.TryAdd(userId, Areas.DB.Data.SharePermission.WRITE);
+            }
+            return false;
         }
     }
 }

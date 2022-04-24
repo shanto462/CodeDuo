@@ -11,9 +11,9 @@ namespace CodeDuo.DI.Access
             _memoryDB = memoryDB;
         }
 
-        public InMemoryCodeData CreateCodedata(Guid guid)
+        public InMemoryCodeData CreateCodedata(Guid guid, string userId)
         {
-            return _memoryDB.CreateCodedata(guid);
+            return _memoryDB.CreateCodedata(guid, userId);
         }
 
         public InMemoryCodeData GetCodedata(Guid guid)
@@ -48,6 +48,11 @@ namespace CodeDuo.DI.Access
                 return true;
             }
             return false;
+        }
+
+        public bool AddSharingToUserId(Guid guid, string userId)
+        {
+            return _memoryDB.AddSharingToUserId(guid, userId);
         }
     }
 }

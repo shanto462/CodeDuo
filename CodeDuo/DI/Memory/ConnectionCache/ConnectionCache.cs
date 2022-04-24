@@ -1,47 +1,71 @@
-﻿using CodeDuo.Hubs;
+﻿using CodeDuo.DS;
+using CodeDuo.Hubs;
 using System.Collections.Concurrent;
 
 namespace CodeDuo.DI.Memory.ConnectionCache
 {
     public class ConnectionCache : IConnectionCache
     {
-        private readonly ConcurrentDictionary<string, ConcurrentDictionary<ConnectedUser, byte>> _connectionDict = new ConcurrentDictionary<string, ConcurrentDictionary<ConnectedUser, byte>>();
+        private readonly ConcurrentMultiDictionary<string, ConnectedUser> _guidDict = new ConcurrentMultiDictionary<string, ConnectedUser>();
+
+        private readonly ConcurrentMultiDictionary<string, ConnectedUser> _connectionDict = new ConcurrentMultiDictionary<string, ConnectedUser>();
 
         public IEnumerable<string> GetConnectionKeys(string guid)
         {
-            if (_connectionDict.ContainsKey(guid))
+            if (_guidDict.ContainsKey(guid))
             {
-                foreach (var pair in _connectionDict[guid])
+                foreach (var pair in _guidDict[guid])
                 {
-                    yield return pair.Key.ConnectionKey;
+                    yield return pair.ConnectionKey;
                 }
             }
         }
 
         public bool RegisterConnection(string guid, string userId, string connectionKey)
         {
-            if (!_connectionDict.ContainsKey(guid))
+            if (!_guidDict.ContainsKey(guid))
             {
-                var list = new ConcurrentDictionary<ConnectedUser, byte>();
+                var list = new ConcurrentHashset<ConnectedUser>();
                 if (!AddToConnectedList(guid, userId, list, connectionKey))
                     return false;
-                return _connectionDict.TryAdd(guid, list);
+                return _guidDict.TryAdd(guid, list);
             }
             else
             {
-                return AddToConnectedList(guid, userId, _connectionDict[guid], connectionKey);
+                return AddToConnectedList(guid, userId, _guidDict[guid], connectionKey);
             }
         }
 
-        private bool AddToConnectedList(string guid, string userId, ConcurrentDictionary<ConnectedUser, byte> list, string connectionKey)
+        public bool RemoveFromCache(string connectionKey)
         {
-            return list.TryAdd(new ConnectedUser
+            if (_connectionDict.ContainsKey(connectionKey))
+            {
+                var data = _connectionDict[connectionKey];
+                foreach (var pair in data)
+                {
+                    var guid = pair.Guid;
+                    var ret = _guidDict.TryRemove(guid);
+                    if (!ret)
+                        return false;
+                }
+                return _connectionDict.TryRemove(connectionKey);
+            }
+            return true;
+        }
+
+        private bool AddToConnectedList(string guid, string userId, ConcurrentHashset<ConnectedUser> list, string connectionKey)
+        {
+            var data = new ConnectedUser
             {
                 Guid = guid,
                 ConnectionKey = connectionKey,
                 UserId = userId,
                 ConnectionTime = DateTime.UtcNow
-            }, new byte());
+            };
+            var ret = _connectionDict.TryAdd(connectionKey, data);
+            if (!ret)
+                return false;
+            return list.TryAdd(data);
         }
     }
 }
